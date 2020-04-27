@@ -30,34 +30,33 @@
             <input type="search" class="form-control" [(ngModel)]="filter">
 
 
-            <!--<span class="mx-2 col-1">Sort by</span>-->
+            <span class="mx-2 col-1">Sort by</span>
             <div class="btn-group" role="group" jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="loadPage.bind(this)">
 
               <button type="button" class="btn btn-light" jhiSortBy="nombre">
                 <span class="d-flex">
-                  <span jhiTranslate="storeApp.producto.nombre">Name</span>&nbsp;
+                  <span jhiTranslate="mitiendaApp.producto.nombre">Name</span>&nbsp;
                   <fa-icon [icon]="'sort'"></fa-icon>
                 </span>
               </button>
 
               <button type="button" class="btn btn-light" jhiSortBy="precioVenta">
                 <span class="d-flex">
-                  <span jhiTranslate="storeApp.producto.precioVenta">Price</span>&nbsp;
+                  <span jhiTranslate="mitiendaApp.producto.precioVenta">Price</span>&nbsp;
                   <fa-icon [icon]="'sort'"></fa-icon>
                 </span>
               </button>
 
               <button type="button" class="btn btn-light" jhiSortBy="estado">
                 <span class="d-flex">
-                  <span jhiTranslate="storeApp.producto.estado">Estado</span>&nbsp;
+                  <span jhiTranslate="mitiendaApp.producto.estado">Estado</span>&nbsp;
                   <fa-icon [icon]="'sort'"></fa-icon>
                 </span>
               </button>
 
-              <button type="button" class="btn btn-light"
-               jhiSortBy="productCategoriaId">
+              <button type="button" class="btn btn-light" jhiSortBy="git">
                 <span class="d-flex">
-                  <span jhiTranslate="storeApp.producto.ProductoCategoria">Product
+                  <span jhiTranslate="mitiendaApp.productoCategoria">Product
                     Category</span>&nbsp;
                   <fa-icon [icon]="'sort'"></fa-icon>
                 </span>
@@ -76,7 +75,8 @@
 
 
                     <div class="col-2 col-xs-12 justify-content-center">
-                        <img [src]="'data:' + producto.imageContentType + ';base64,' + producto.image" style="max-height:150px;" alt="product image" />
+                        <!--<img [src]="'data:' + producto.imageContentType + ';base64,' + producto.image" style="max-height:150px;" alt="product image" />-->
+                        <img src="https://www.dhresource.com/webp/m/0x0s/f2-albu-g6-M01-8B-C1-rBVaSFvVUuqACRamAADFf6BlJW0228.jpg/camiseta-de-mujer-redbella-estilo-coreano.jpg" alt="" style="max-height:150px;">
                     </div>
 
                     <div class="col col-xs-12">
