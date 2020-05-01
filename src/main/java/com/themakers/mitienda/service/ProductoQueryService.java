@@ -106,6 +106,9 @@ public class ProductoQueryService extends QueryService<Producto> {
             if (criteria.getEstado() != null) {
                 specification = specification.and(buildSpecification(criteria.getEstado(), Producto_.estado));
             }
+            if (criteria.getTalla() != null) {
+                specification = specification.and(buildSpecification(criteria.getTalla(), Producto_.talla));
+            }
             if (criteria.getProductoDetalleId() != null) {
                 specification = specification.and(buildSpecification(criteria.getProductoDetalleId(),
                     root -> root.join(Producto_.productoDetalles, JoinType.LEFT).get(ProductoDetalle_.id)));

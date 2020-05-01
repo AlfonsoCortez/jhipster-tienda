@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { JhiDataUtils, JhiFileLoadError, JhiEventManager, JhiEventWithContent } from 'ng-jhipster';
 
 import { IProducto, Producto } from 'app/shared/model/producto.model';
 import { ProductoService } from './producto.service';
+import { AlertError } from 'app/shared/alert/alert-error.model';
 import { IProductoCategoria } from 'app/shared/model/producto-categoria.model';
 import { ProductoCategoriaService } from 'app/entities/producto-categoria/producto-categoria.service';
 
@@ -27,12 +29,18 @@ export class ProductoUpdateComponent implements OnInit {
     precioCompra: [null, [Validators.required, Validators.min(0)]],
     precioVenta: [null, [Validators.required, Validators.min(0)]],
     estado: [],
+    talla: [null, [Validators.required]],
+    image: [],
+    imageContentType: [],
     productCategoriaId: []
   });
 
   constructor(
+    protected dataUtils: JhiDataUtils,
+    protected eventManager: JhiEventManager,
     protected productoService: ProductoService,
     protected productoCategoriaService: ProductoCategoriaService,
+    protected elementRef: ElementRef,
     protected activatedRoute: ActivatedRoute,
     private fb: FormBuilder
   ) {}
@@ -60,8 +68,37 @@ export class ProductoUpdateComponent implements OnInit {
       precioCompra: producto.precioCompra,
       precioVenta: producto.precioVenta,
       estado: producto.estado,
+      talla: producto.talla,
+      image: producto.image,
+      imageContentType: producto.imageContentType,
       productCategoriaId: producto.productCategoriaId
     });
+  }
+
+  byteSize(base64String: string): string {
+    return this.dataUtils.byteSize(base64String);
+  }
+
+  openFile(contentType: string, base64String: string): void {
+    this.dataUtils.openFile(contentType, base64String);
+  }
+
+  setFileData(event: Event, field: string, isImage: boolean): void {
+    this.dataUtils.loadFileToForm(event, this.editForm, field, isImage).subscribe(null, (err: JhiFileLoadError) => {
+      this.eventManager.broadcast(
+        new JhiEventWithContent<AlertError>('mitiendaApp.error', { ...err, key: 'error.file.' + err.key })
+      );
+    });
+  }
+
+  clearInputImage(field: string, fieldContentType: string, idInput: string): void {
+    this.editForm.patchValue({
+      [field]: null,
+      [fieldContentType]: null
+    });
+    if (this.elementRef && idInput && this.elementRef.nativeElement.querySelector('#' + idInput)) {
+      this.elementRef.nativeElement.querySelector('#' + idInput).value = null;
+    }
   }
 
   previousState(): void {
@@ -87,6 +124,9 @@ export class ProductoUpdateComponent implements OnInit {
       precioCompra: this.editForm.get(['precioCompra'])!.value,
       precioVenta: this.editForm.get(['precioVenta'])!.value,
       estado: this.editForm.get(['estado'])!.value,
+      talla: this.editForm.get(['talla'])!.value,
+      imageContentType: this.editForm.get(['imageContentType'])!.value,
+      image: this.editForm.get(['image'])!.value,
       productCategoriaId: this.editForm.get(['productCategoriaId'])!.value
     };
   }

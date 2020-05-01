@@ -21,6 +21,8 @@
       "precioCompra": "Precio Compra",
       "precioVenta": "Precio Venta",
       "estado": "Estado",
+      "talla": "Talla",
+      "image": "Image",
       "productoDetalle": "Producto Detalle",
       "productCategoria": "Product Categoria"
     }

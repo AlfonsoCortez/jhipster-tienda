@@ -6,7 +6,11 @@ entity Producto
     precioCompra BigDecimal required min(0)
     precioVenta BigDecimal required min(0)
     estado EstadoProducto
-   // image ImageBlob
+    talla Talla required
+    image ImageBlob
+}
+enum Talla{
+    S, M ,L, XL, XLL
 }
 
 entity Stock
@@ -88,7 +92,7 @@ relationship ManyToOne {
 
 relationship OneToMany {
 
-   ProductoCategoria{producto} to Producto{productCategoria}
+   ProductoCategoria{producto} to Producto{productCategoria(nombre)}
    Producto{productoDetalle} to ProductoDetalle{producto(nombre)}
   // ProductoDetalle{stock} to Stock{productoDetalle(codigo)}
    //Sucursal{productoDetalle} to ProductoDetalle{sucursal(nombre)}

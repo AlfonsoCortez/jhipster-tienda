@@ -13,6 +13,8 @@ import java.util.Set;
 
 import com.themakers.mitienda.domain.enumeration.EstadoProducto;
 
+import com.themakers.mitienda.domain.enumeration.Talla;
+
 /**
  * Product sold by the Online store
  */
@@ -48,6 +50,18 @@ public class Producto implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "estado")
     private EstadoProducto estado;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "talla", nullable = false)
+    private Talla talla;
+
+    @Lob
+    @Column(name = "image")
+    private byte[] image;
+
+    @Column(name = "image_content_type")
+    private String imageContentType;
 
     @OneToMany(mappedBy = "producto")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -131,6 +145,45 @@ public class Producto implements Serializable {
         this.estado = estado;
     }
 
+    public Talla getTalla() {
+        return talla;
+    }
+
+    public Producto talla(Talla talla) {
+        this.talla = talla;
+        return this;
+    }
+
+    public void setTalla(Talla talla) {
+        this.talla = talla;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public Producto image(byte[] image) {
+        this.image = image;
+        return this;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public String getImageContentType() {
+        return imageContentType;
+    }
+
+    public Producto imageContentType(String imageContentType) {
+        this.imageContentType = imageContentType;
+        return this;
+    }
+
+    public void setImageContentType(String imageContentType) {
+        this.imageContentType = imageContentType;
+    }
+
     public Set<ProductoDetalle> getProductoDetalles() {
         return productoDetalles;
     }
@@ -195,6 +248,9 @@ public class Producto implements Serializable {
             ", precioCompra=" + getPrecioCompra() +
             ", precioVenta=" + getPrecioVenta() +
             ", estado='" + getEstado() + "'" +
+            ", talla='" + getTalla() + "'" +
+            ", image='" + getImage() + "'" +
+            ", imageContentType='" + getImageContentType() + "'" +
             "}";
     }
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import io.github.jhipster.service.Criteria;
 import com.themakers.mitienda.domain.enumeration.EstadoProducto;
+import com.themakers.mitienda.domain.enumeration.Talla;
 import io.github.jhipster.service.filter.BooleanFilter;
 import io.github.jhipster.service.filter.DoubleFilter;
 import io.github.jhipster.service.filter.Filter;
@@ -41,6 +42,24 @@ public class ProductoCriteria implements Serializable, Criteria {
         }
 
     }
+    /**
+     * Class for filtering Talla
+     */
+    public static class TallaFilter extends Filter<Talla> {
+
+        public TallaFilter() {
+        }
+
+        public TallaFilter(TallaFilter filter) {
+            super(filter);
+        }
+
+        @Override
+        public TallaFilter copy() {
+            return new TallaFilter(this);
+        }
+
+    }
 
     private static final long serialVersionUID = 1L;
 
@@ -56,6 +75,8 @@ public class ProductoCriteria implements Serializable, Criteria {
 
     private EstadoProductoFilter estado;
 
+    private TallaFilter talla;
+
     private LongFilter productoDetalleId;
 
     private LongFilter productCategoriaId;
@@ -70,6 +91,7 @@ public class ProductoCriteria implements Serializable, Criteria {
         this.precioCompra = other.precioCompra == null ? null : other.precioCompra.copy();
         this.precioVenta = other.precioVenta == null ? null : other.precioVenta.copy();
         this.estado = other.estado == null ? null : other.estado.copy();
+        this.talla = other.talla == null ? null : other.talla.copy();
         this.productoDetalleId = other.productoDetalleId == null ? null : other.productoDetalleId.copy();
         this.productCategoriaId = other.productCategoriaId == null ? null : other.productCategoriaId.copy();
     }
@@ -127,6 +149,14 @@ public class ProductoCriteria implements Serializable, Criteria {
         this.estado = estado;
     }
 
+    public TallaFilter getTalla() {
+        return talla;
+    }
+
+    public void setTalla(TallaFilter talla) {
+        this.talla = talla;
+    }
+
     public LongFilter getProductoDetalleId() {
         return productoDetalleId;
     }
@@ -160,6 +190,7 @@ public class ProductoCriteria implements Serializable, Criteria {
             Objects.equals(precioCompra, that.precioCompra) &&
             Objects.equals(precioVenta, that.precioVenta) &&
             Objects.equals(estado, that.estado) &&
+            Objects.equals(talla, that.talla) &&
             Objects.equals(productoDetalleId, that.productoDetalleId) &&
             Objects.equals(productCategoriaId, that.productCategoriaId);
     }
@@ -173,6 +204,7 @@ public class ProductoCriteria implements Serializable, Criteria {
         precioCompra,
         precioVenta,
         estado,
+        talla,
         productoDetalleId,
         productCategoriaId
         );
@@ -187,6 +219,7 @@ public class ProductoCriteria implements Serializable, Criteria {
                 (precioCompra != null ? "precioCompra=" + precioCompra + ", " : "") +
                 (precioVenta != null ? "precioVenta=" + precioVenta + ", " : "") +
                 (estado != null ? "estado=" + estado + ", " : "") +
+                (talla != null ? "talla=" + talla + ", " : "") +
                 (productoDetalleId != null ? "productoDetalleId=" + productoDetalleId + ", " : "") +
                 (productCategoriaId != null ? "productCategoriaId=" + productCategoriaId + ", " : "") +
             "}";

@@ -4,7 +4,9 @@ import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
+import javax.persistence.Lob;
 import com.themakers.mitienda.domain.enumeration.EstadoProducto;
+import com.themakers.mitienda.domain.enumeration.Talla;
 
 /**
  * A DTO for the {@link com.themakers.mitienda.domain.Producto} entity.
@@ -29,8 +31,17 @@ public class ProductoDTO implements Serializable {
 
     private EstadoProducto estado;
 
+    @NotNull
+    private Talla talla;
+
+    @Lob
+    private byte[] image;
+
+    private String imageContentType;
 
     private Long productCategoriaId;
+
+    private String productCategoriaNombre;
 
     public Long getId() {
         return id;
@@ -80,12 +91,44 @@ public class ProductoDTO implements Serializable {
         this.estado = estado;
     }
 
+    public Talla getTalla() {
+        return talla;
+    }
+
+    public void setTalla(Talla talla) {
+        this.talla = talla;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public String getImageContentType() {
+        return imageContentType;
+    }
+
+    public void setImageContentType(String imageContentType) {
+        this.imageContentType = imageContentType;
+    }
+
     public Long getProductCategoriaId() {
         return productCategoriaId;
     }
 
     public void setProductCategoriaId(Long productoCategoriaId) {
         this.productCategoriaId = productoCategoriaId;
+    }
+
+    public String getProductCategoriaNombre() {
+        return productCategoriaNombre;
+    }
+
+    public void setProductCategoriaNombre(String productoCategoriaNombre) {
+        this.productCategoriaNombre = productoCategoriaNombre;
     }
 
     @Override
@@ -118,7 +161,10 @@ public class ProductoDTO implements Serializable {
             ", precioCompra=" + getPrecioCompra() +
             ", precioVenta=" + getPrecioVenta() +
             ", estado='" + getEstado() + "'" +
+            ", talla='" + getTalla() + "'" +
+            ", image='" + getImage() + "'" +
             ", productCategoriaId=" + getProductCategoriaId() +
+            ", productCategoriaNombre='" + getProductCategoriaNombre() + "'" +
             "}";
     }
 }

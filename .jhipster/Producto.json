@@ -34,6 +34,19 @@
             "fieldName": "estado",
             "fieldType": "EstadoProducto",
             "fieldValues": "ACTIVO,INACTIVO,AGOTADO"
+        },
+        {
+            "fieldName": "talla",
+            "fieldType": "Talla",
+            "fieldValues": "S,M,L,XL,XLL",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "image",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "image"
         }
     ],
     "relationships": [
@@ -48,7 +61,7 @@
             "otherEntityName": "productoCategoria",
             "otherEntityRelationshipName": "producto",
             "relationshipName": "productCategoria",
-            "otherEntityField": "id"
+            "otherEntityField": "nombre"
         }
     ],
     "changelogDate": "20200225114917",

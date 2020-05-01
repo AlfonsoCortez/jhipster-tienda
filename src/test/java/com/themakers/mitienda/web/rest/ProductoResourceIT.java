@@ -23,6 +23,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
 import org.springframework.validation.Validator;
 
 import javax.persistence.EntityManager;
@@ -36,6 +37,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.themakers.mitienda.domain.enumeration.EstadoProducto;
+import com.themakers.mitienda.domain.enumeration.Talla;
 /**
  * Integration tests for the {@link ProductoResource} REST controller.
  */
@@ -58,6 +60,14 @@ public class ProductoResourceIT {
 
     private static final EstadoProducto DEFAULT_ESTADO = EstadoProducto.ACTIVO;
     private static final EstadoProducto UPDATED_ESTADO = EstadoProducto.INACTIVO;
+
+    private static final Talla DEFAULT_TALLA = Talla.S;
+    private static final Talla UPDATED_TALLA = Talla.M;
+
+    private static final byte[] DEFAULT_IMAGE = TestUtil.createByteArray(1, "0");
+    private static final byte[] UPDATED_IMAGE = TestUtil.createByteArray(1, "1");
+    private static final String DEFAULT_IMAGE_CONTENT_TYPE = "image/jpg";
+    private static final String UPDATED_IMAGE_CONTENT_TYPE = "image/png";
 
     @Autowired
     private ProductoRepository productoRepository;
@@ -114,7 +124,10 @@ public class ProductoResourceIT {
             .descripcion(DEFAULT_DESCRIPCION)
             .precioCompra(DEFAULT_PRECIO_COMPRA)
             .precioVenta(DEFAULT_PRECIO_VENTA)
-            .estado(DEFAULT_ESTADO);
+            .estado(DEFAULT_ESTADO)
+            .talla(DEFAULT_TALLA)
+            .image(DEFAULT_IMAGE)
+            .imageContentType(DEFAULT_IMAGE_CONTENT_TYPE);
         return producto;
     }
     /**
@@ -129,7 +142,10 @@ public class ProductoResourceIT {
             .descripcion(UPDATED_DESCRIPCION)
             .precioCompra(UPDATED_PRECIO_COMPRA)
             .precioVenta(UPDATED_PRECIO_VENTA)
-            .estado(UPDATED_ESTADO);
+            .estado(UPDATED_ESTADO)
+            .talla(UPDATED_TALLA)
+            .image(UPDATED_IMAGE)
+            .imageContentType(UPDATED_IMAGE_CONTENT_TYPE);
         return producto;
     }
 
@@ -159,6 +175,9 @@ public class ProductoResourceIT {
         assertThat(testProducto.getPrecioCompra()).isEqualTo(DEFAULT_PRECIO_COMPRA);
         assertThat(testProducto.getPrecioVenta()).isEqualTo(DEFAULT_PRECIO_VENTA);
         assertThat(testProducto.getEstado()).isEqualTo(DEFAULT_ESTADO);
+        assertThat(testProducto.getTalla()).isEqualTo(DEFAULT_TALLA);
+        assertThat(testProducto.getImage()).isEqualTo(DEFAULT_IMAGE);
+        assertThat(testProducto.getImageContentType()).isEqualTo(DEFAULT_IMAGE_CONTENT_TYPE);
     }
 
     @Test
@@ -241,6 +260,25 @@ public class ProductoResourceIT {
 
     @Test
     @Transactional
+    public void checkTallaIsRequired() throws Exception {
+        int databaseSizeBeforeTest = productoRepository.findAll().size();
+        // set the field null
+        producto.setTalla(null);
+
+        // Create the Producto, which fails.
+        ProductoDTO productoDTO = productoMapper.toDto(producto);
+
+        restProductoMockMvc.perform(post("/api/productos")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(productoDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Producto> productoList = productoRepository.findAll();
+        assertThat(productoList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     public void getAllProductos() throws Exception {
         // Initialize the database
         productoRepository.saveAndFlush(producto);
@@ -254,7 +292,10 @@ public class ProductoResourceIT {
             .andExpect(jsonPath("$.[*].descripcion").value(hasItem(DEFAULT_DESCRIPCION)))
             .andExpect(jsonPath("$.[*].precioCompra").value(hasItem(DEFAULT_PRECIO_COMPRA.intValue())))
             .andExpect(jsonPath("$.[*].precioVenta").value(hasItem(DEFAULT_PRECIO_VENTA.intValue())))
-            .andExpect(jsonPath("$.[*].estado").value(hasItem(DEFAULT_ESTADO.toString())));
+            .andExpect(jsonPath("$.[*].estado").value(hasItem(DEFAULT_ESTADO.toString())))
+            .andExpect(jsonPath("$.[*].talla").value(hasItem(DEFAULT_TALLA.toString())))
+            .andExpect(jsonPath("$.[*].imageContentType").value(hasItem(DEFAULT_IMAGE_CONTENT_TYPE)))
+            .andExpect(jsonPath("$.[*].image").value(hasItem(Base64Utils.encodeToString(DEFAULT_IMAGE))));
     }
     
     @Test
@@ -272,7 +313,10 @@ public class ProductoResourceIT {
             .andExpect(jsonPath("$.descripcion").value(DEFAULT_DESCRIPCION))
             .andExpect(jsonPath("$.precioCompra").value(DEFAULT_PRECIO_COMPRA.intValue()))
             .andExpect(jsonPath("$.precioVenta").value(DEFAULT_PRECIO_VENTA.intValue()))
-            .andExpect(jsonPath("$.estado").value(DEFAULT_ESTADO.toString()));
+            .andExpect(jsonPath("$.estado").value(DEFAULT_ESTADO.toString()))
+            .andExpect(jsonPath("$.talla").value(DEFAULT_TALLA.toString()))
+            .andExpect(jsonPath("$.imageContentType").value(DEFAULT_IMAGE_CONTENT_TYPE))
+            .andExpect(jsonPath("$.image").value(Base64Utils.encodeToString(DEFAULT_IMAGE)));
     }
 
 
@@ -715,6 +759,58 @@ public class ProductoResourceIT {
 
     @Test
     @Transactional
+    public void getAllProductosByTallaIsEqualToSomething() throws Exception {
+        // Initialize the database
+        productoRepository.saveAndFlush(producto);
+
+        // Get all the productoList where talla equals to DEFAULT_TALLA
+        defaultProductoShouldBeFound("talla.equals=" + DEFAULT_TALLA);
+
+        // Get all the productoList where talla equals to UPDATED_TALLA
+        defaultProductoShouldNotBeFound("talla.equals=" + UPDATED_TALLA);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProductosByTallaIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        productoRepository.saveAndFlush(producto);
+
+        // Get all the productoList where talla not equals to DEFAULT_TALLA
+        defaultProductoShouldNotBeFound("talla.notEquals=" + DEFAULT_TALLA);
+
+        // Get all the productoList where talla not equals to UPDATED_TALLA
+        defaultProductoShouldBeFound("talla.notEquals=" + UPDATED_TALLA);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProductosByTallaIsInShouldWork() throws Exception {
+        // Initialize the database
+        productoRepository.saveAndFlush(producto);
+
+        // Get all the productoList where talla in DEFAULT_TALLA or UPDATED_TALLA
+        defaultProductoShouldBeFound("talla.in=" + DEFAULT_TALLA + "," + UPDATED_TALLA);
+
+        // Get all the productoList where talla equals to UPDATED_TALLA
+        defaultProductoShouldNotBeFound("talla.in=" + UPDATED_TALLA);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProductosByTallaIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        productoRepository.saveAndFlush(producto);
+
+        // Get all the productoList where talla is not null
+        defaultProductoShouldBeFound("talla.specified=true");
+
+        // Get all the productoList where talla is null
+        defaultProductoShouldNotBeFound("talla.specified=false");
+    }
+
+    @Test
+    @Transactional
     public void getAllProductosByProductoDetalleIsEqualToSomething() throws Exception {
         // Initialize the database
         productoRepository.saveAndFlush(producto);
@@ -764,7 +860,10 @@ public class ProductoResourceIT {
             .andExpect(jsonPath("$.[*].descripcion").value(hasItem(DEFAULT_DESCRIPCION)))
             .andExpect(jsonPath("$.[*].precioCompra").value(hasItem(DEFAULT_PRECIO_COMPRA.intValue())))
             .andExpect(jsonPath("$.[*].precioVenta").value(hasItem(DEFAULT_PRECIO_VENTA.intValue())))
-            .andExpect(jsonPath("$.[*].estado").value(hasItem(DEFAULT_ESTADO.toString())));
+            .andExpect(jsonPath("$.[*].estado").value(hasItem(DEFAULT_ESTADO.toString())))
+            .andExpect(jsonPath("$.[*].talla").value(hasItem(DEFAULT_TALLA.toString())))
+            .andExpect(jsonPath("$.[*].imageContentType").value(hasItem(DEFAULT_IMAGE_CONTENT_TYPE)))
+            .andExpect(jsonPath("$.[*].image").value(hasItem(Base64Utils.encodeToString(DEFAULT_IMAGE))));
 
         // Check, that the count call also returns 1
         restProductoMockMvc.perform(get("/api/productos/count?sort=id,desc&" + filter))
@@ -816,7 +915,10 @@ public class ProductoResourceIT {
             .descripcion(UPDATED_DESCRIPCION)
             .precioCompra(UPDATED_PRECIO_COMPRA)
             .precioVenta(UPDATED_PRECIO_VENTA)
-            .estado(UPDATED_ESTADO);
+            .estado(UPDATED_ESTADO)
+            .talla(UPDATED_TALLA)
+            .image(UPDATED_IMAGE)
+            .imageContentType(UPDATED_IMAGE_CONTENT_TYPE);
         ProductoDTO productoDTO = productoMapper.toDto(updatedProducto);
 
         restProductoMockMvc.perform(put("/api/productos")
@@ -833,6 +935,9 @@ public class ProductoResourceIT {
         assertThat(testProducto.getPrecioCompra()).isEqualTo(UPDATED_PRECIO_COMPRA);
         assertThat(testProducto.getPrecioVenta()).isEqualTo(UPDATED_PRECIO_VENTA);
         assertThat(testProducto.getEstado()).isEqualTo(UPDATED_ESTADO);
+        assertThat(testProducto.getTalla()).isEqualTo(UPDATED_TALLA);
+        assertThat(testProducto.getImage()).isEqualTo(UPDATED_IMAGE);
+        assertThat(testProducto.getImageContentType()).isEqualTo(UPDATED_IMAGE_CONTENT_TYPE);
     }
 
     @Test

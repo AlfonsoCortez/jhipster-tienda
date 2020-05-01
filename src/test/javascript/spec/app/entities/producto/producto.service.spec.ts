@@ -4,6 +4,7 @@ import { take, map } from 'rxjs/operators';
 import { ProductoService } from 'app/entities/producto/producto.service';
 import { IProducto, Producto } from 'app/shared/model/producto.model';
 import { EstadoProducto } from 'app/shared/model/enumerations/estado-producto.model';
+import { Talla } from 'app/shared/model/enumerations/talla.model';
 
 describe('Service Tests', () => {
   describe('Producto Service', () => {
@@ -21,7 +22,7 @@ describe('Service Tests', () => {
       service = injector.get(ProductoService);
       httpMock = injector.get(HttpTestingController);
 
-      elemDefault = new Producto(0, 'AAAAAAA', 'AAAAAAA', 0, 0, EstadoProducto.ACTIVO);
+      elemDefault = new Producto(0, 'AAAAAAA', 'AAAAAAA', 0, 0, EstadoProducto.ACTIVO, Talla.S, 'image/png', 'AAAAAAA');
     });
 
     describe('Service methods', () => {
@@ -61,7 +62,9 @@ describe('Service Tests', () => {
             descripcion: 'BBBBBB',
             precioCompra: 1,
             precioVenta: 1,
-            estado: 'BBBBBB'
+            estado: 'BBBBBB',
+            talla: 'BBBBBB',
+            image: 'BBBBBB'
           },
           elemDefault
         );
@@ -83,7 +86,9 @@ describe('Service Tests', () => {
             descripcion: 'BBBBBB',
             precioCompra: 1,
             precioVenta: 1,
-            estado: 'BBBBBB'
+            estado: 'BBBBBB',
+            talla: 'BBBBBB',
+            image: 'BBBBBB'
           },
           elemDefault
         );
